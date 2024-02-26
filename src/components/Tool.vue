@@ -7,11 +7,11 @@
       重置
     </el-button>
     <el-button size="mini" @click="showImport = true">
-      导入名单
+      導入名單
     </el-button>
-    <el-button size="mini" @click="showImportphoto = true">
+    <!-- <el-button size="mini" @click="showImportphoto = true">
       导入照片
-    </el-button>
+    </el-button> -->
     <el-dialog
       :append-to-body="true"
       :visible.sync="showSetwat"

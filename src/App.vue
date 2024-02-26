@@ -1,12 +1,17 @@
 <template>
   <div id="root">
+    <!-- 當 showLottery 為 false 時，顯示 Instagram 輸入元件 -->
+    <InstagramInput
+      v-if="!showLottery"
+      @commentsLoaded="handleCommentsLoaded"
+    />
     <header>
       <Publicity v-show="!running" />
       <el-button class="res" type="text" @click="showResult = true">
-        抽奖结果
+        抽獎結果
       </el-button>
       <el-button class="con" type="text" @click="showConfig = true">
-        抽奖配置
+        抽獎配置
       </el-button>
     </header>
     <div id="main" :class="{ mask: showRes }"></div>
@@ -16,7 +21,7 @@
           <a
             href="javascript:void(0);"
             :style="{
-              color: '#fff',
+              color: '#fff'
             }"
           >
             {{ item.name ? item.name : item.key }}
@@ -27,7 +32,7 @@
     </div>
     <transition name="bounce">
       <div id="resbox" v-show="showRes">
-        <p @click="showRes = false">{{ categoryName }}抽奖结果：</p>
+        <p @click="showRes = false">{{ categoryName }}抽獎结果：</p>
         <div class="container">
           <span
             v-for="item in resArr"
@@ -38,26 +43,26 @@
             @click="showRes = false"
             :class="{
               numberOver:
-                !!photos.find((d) => d.id === item) ||
-                !!list.find((d) => d.key === item),
+                !!photos.find(d => d.id === item) ||
+                !!list.find(d => d.key === item)
             }"
           >
-            <span class="cont" v-if="!photos.find((d) => d.id === item)">
+            <span class="cont" v-if="!photos.find(d => d.id === item)">
               <span
-                v-if="!!list.find((d) => d.key === item)"
+                v-if="!!list.find(d => d.key === item)"
                 :style="{
-                  fontSize: '40px',
+                  fontSize: '40px'
                 }"
               >
-                {{ list.find((d) => d.key === item).name }}
+                {{ list.find(d => d.key === item).name }}
               </span>
               <span v-else>
                 {{ item }}
               </span>
             </span>
             <img
-              v-if="photos.find((d) => d.id === item)"
-              :src="photos.find((d) => d.id === item).value"
+              v-if="photos.find(d => d.id === item)"
+              :src="photos.find(d => d.id === item).value"
               alt="photo"
               :width="160"
               :height="160"
@@ -93,7 +98,7 @@
     <Result :visible.sync="showResult"></Result>
 
     <span class="copy-right">
-      Copyright©zhangyongfeng5350@gmail.com
+      Copyright©a51009960@gmail.com
     </span>
 
     <audio
@@ -106,7 +111,7 @@
       @pause="pauseHandler"
     >
       <source :src="audioSrc" />
-      你的浏览器不支持audio标签
+      你的瀏覽器不支援audio標籤
     </audio>
   </div>
 </template>
@@ -114,6 +119,7 @@
 import LotteryConfig from '@/components/LotteryConfig';
 import Publicity from '@/components/Publicity';
 import Tool from '@/components/Tool';
+import InstagramInput from '@/components/InstagramInput';
 import bgaudio from '@/assets/bg.mp3';
 import beginaudio from '@/assets/begin.mp3';
 import {
@@ -122,7 +128,7 @@ import {
   resultField,
   newLotteryField,
   conversionCategoryName,
-  listField,
+  listField
 } from '@/helper/index';
 import { luckydrawHandler } from '@/helper/algorithm';
 import Result from '@/components/Result';
@@ -130,7 +136,7 @@ import { database, DB_STORE_NAME } from '@/helper/db';
 export default {
   name: 'App',
 
-  components: { LotteryConfig, Publicity, Tool, Result },
+  components: { LotteryConfig, Publicity, Tool, Result, InstagramInput },
 
   computed: {
     resCardStyle() {
@@ -148,7 +154,7 @@ export default {
     config: {
       get() {
         return this.$store.state.config;
-      },
+      }
     },
     result: {
       get() {
@@ -156,7 +162,7 @@ export default {
       },
       set(val) {
         this.$store.commit('setResult', val);
-      },
+      }
     },
     list() {
       return this.$store.state.list;
@@ -176,13 +182,13 @@ export default {
       const nums = number >= 1500 ? 500 : this.config.number;
       const configNum = number > 1500 ? Math.floor(number / 3) : number;
       const randomShowNums = luckydrawHandler(configNum, [], nums);
-      const randomShowDatas = randomShowNums.map((item) => {
-        const listData = this.list.find((d) => d.key === item);
-        const photo = this.photos.find((d) => d.id === item);
+      const randomShowDatas = randomShowNums.map(item => {
+        const listData = this.list.find(d => d.key === item);
+        const photo = this.photos.find(d => d.id === item);
         return {
           key: item * (number > 1500 ? 3 : 1),
           name: listData ? listData.name : '',
-          photo: photo ? photo.value : '',
+          photo: photo ? photo.value : ''
         };
       });
       return randomShowDatas;
@@ -192,7 +198,7 @@ export default {
     },
     photos() {
       return this.$store.state.photos;
-    },
+    }
   },
   created() {
     const data = getData(configField);
@@ -207,7 +213,7 @@ export default {
     const newLottery = getData(newLotteryField);
     if (newLottery) {
       const config = this.config;
-      newLottery.forEach((item) => {
+      newLottery.forEach(item => {
         this.$store.commit('setNewLottery', item);
         if (!config[item.key]) {
           this.$set(config, item.key, 0);
@@ -232,6 +238,7 @@ export default {
       category: '',
       audioPlaying: false,
       audioSrc: bgaudio,
+      commentsLoaded: false
     };
   },
   watch: {
@@ -241,8 +248,8 @@ export default {
         this.$nextTick(() => {
           this.reloadTagCanvas();
         });
-      },
-    },
+      }
+    }
   },
   mounted() {
     this.startTagCanvas();
@@ -255,6 +262,13 @@ export default {
     window.removeEventListener('resize', this.reportWindowSize);
   },
   methods: {
+    handleCommentsLoaded(instagramLink) {
+      console.log('instagramLink', instagramLink);
+      // 處理加載評論，例如通過 API 獲取
+      // 假設加載成功後，顯示抽獎界面
+      this.commentsLoaded = true;
+      // 可以使用 instagramLink 進行下一步操作
+    },
     reportWindowSize() {
       const AppCanvas = this.$el.querySelector('#rootcanvas');
       if (AppCanvas.parentElement) {
@@ -282,7 +296,7 @@ export default {
       });
     },
     getPhoto() {
-      database.getAll(DB_STORE_NAME).then((res) => {
+      database.getAll(DB_STORE_NAME).then(res => {
         if (res && res.length > 0) {
           this.$store.commit('setPhotos', res);
         }
@@ -307,7 +321,7 @@ export default {
         dragControl: 1,
         textHeight: 20,
         noSelect: true,
-        lock: 'xy',
+        lock: 'xy'
       });
     },
     reloadTagCanvas() {
@@ -360,14 +374,14 @@ export default {
         }
         const oldRes = this.result[category] || [];
         const data = Object.assign({}, this.result, {
-          [category]: oldRes.concat(resArr),
+          [category]: oldRes.concat(resArr)
         });
         this.result = data;
         window.TagCanvas.SetSpeed('rootcanvas', [5, 1]);
         this.running = !this.running;
       }
-    },
-  },
+    }
+  }
 };
 </script>
 <style lang="scss">
@@ -379,27 +393,33 @@ export default {
   background-position: center center;
   background-repeat: no-repeat;
   background-color: #121936;
+
   .mask {
     -webkit-filter: blur(5px);
     filter: blur(5px);
   }
+
   header {
     height: 50px;
     line-height: 50px;
     position: relative;
+
     .el-button {
       position: absolute;
       top: 17px;
       padding: 0;
       z-index: 9999;
+
       &.con {
         right: 20px;
       }
+
       &.res {
         right: 100px;
       }
     }
   }
+
   .audio {
     position: absolute;
     top: 100px;
@@ -411,11 +431,13 @@ export default {
     border-radius: 50%;
     padding: 0;
     text-align: center;
+
     .iconfont {
       position: relative;
       left: 1px;
     }
   }
+
   .copy-right {
     position: absolute;
     right: 0;
@@ -423,13 +445,16 @@ export default {
     color: #ccc;
     font-size: 12px;
   }
+
   .bounce-enter-active {
     animation: bounce-in 1.5s;
   }
+
   .bounce-leave-active {
     animation: bounce-in 0s reverse;
   }
 }
+
 #main {
   height: 100%;
 }
@@ -441,16 +466,19 @@ export default {
   width: 1280px;
   transform: translateX(-50%) translateY(-50%);
   text-align: center;
+
   p {
     color: red;
     font-size: 50px;
     line-height: 120px;
   }
+
   .container {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
   }
+
   .itemres {
     background: #fff;
     width: 160px;
@@ -466,11 +494,13 @@ export default {
     align-items: center;
     justify-content: center;
     position: relative;
+
     .cont {
       display: flex;
       justify-content: center;
       align-items: center;
     }
+
     &.numberOver::before {
       content: attr(data-id);
       width: 30px;
