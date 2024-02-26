@@ -7,6 +7,8 @@ WORKDIR /app
 # 将 package.json 和 package-lock.json 复制到工作目录
 COPY package*.json ./
 
+RUN yarn upgrade
+
 # 安装项目依赖
 RUN npm install
 
