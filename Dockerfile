@@ -19,7 +19,7 @@ RUN npm run build
 RUN npm run serve
 # 指定运行时容器监听的端口号
 
-EXPOSE 80
+EXPOSE 10000
 
 
 
